@@ -286,4 +286,5 @@ void Project::DeleteProject(sql::Connection* con) {
     delete pstmtDelete;
 
     cout << "Project deleted successfully!\n";
+
 }
