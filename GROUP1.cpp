@@ -133,7 +133,7 @@ void Jobposition::RemoveEmployee(sql::Connection* con) {
             bool sure = false;
             int x;
             int idToDelete;
-            cout << "Enter the ID of the employee you want to delete: ";
+            cout << "Enter the ID of the employee you want to delete :  ";
             cin >> idToDelete;
             cout << "\nAre you sure you want to delete this employee ?";
             cout << "\n1. Yes";
