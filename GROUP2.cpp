@@ -288,3 +288,158 @@ void Project::DeleteProject(sql::Connection* con) {
     cout << "Project deleted successfully!\n";
 
 }
+     //class customer
+void Customer::displayAllCustomers(sql::Connection* con) {
+    sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM customers");
+    sql::ResultSet* res = pstmt->executeQuery();
+
+    cout << "Displaying all customers:\n";
+    cout << "ID | Customer Name | Address | Phone Number\n";
+
+    while (res->next()) {
+        cout << res->getInt("customer_id") << " | "
+            << res->getString("customer_name") << " | "
+            << res->getString("address") << " | "
+            << res->getString("phone_number") << endl;
+    }
+
+    delete res;
+    delete pstmt;
+
+    cout << "------------------------------------------\n";
+}
+
+void Customer::displayCustomerById(sql::Connection* con) {
+    cout << "Enter customer id : ";
+    cin >> customer_id;
+    sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM customers WHERE customer_id = ?");
+    pstmt->setInt(1, customer_id);
+
+    sql::ResultSet* res = pstmt->executeQuery();
+
+    cout << "Displaying customer information for ID " << customer_id << ":\n";
+    cout << "ID | Customer Name | Address | Phone Number\n";
+
+    while (res->next()) {
+        cout << res->getInt("customer_id") << " | "
+            << res->getString("customer_name") << " | "
+            << res->getString("address") << " | "
+            << res->getString("phone_number") << endl;
+    }
+
+    delete res;
+    delete pstmt;
+
+    cout << "------------------------------------------\n";
+}
+
+bool Customer::customerExists(sql::Connection* con) {
+    sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM customers WHERE customer_id = ?");
+    pstmt->setInt(1, customer_id);
+
+    sql::ResultSet* res = pstmt->executeQuery();
+
+    bool exists = res->next();
+
+    delete res;
+    delete pstmt;
+
+    return exists;
+}
+
+int Customer::insertCustomer(sql::Connection* con) {
+    string customerName;
+    string address;
+    string phoneNumber;
+
+    cout << "Enter customer details:\n";
+
+    cout << "Customer Name: ";
+    getline(cin, customerName);
+
+    cout << "Address: ";
+    getline(cin, address);
+
+
+    while (true) {
+        cout << "Phone Number: ";
+        cin >> phoneNumber;
+
+        sql::PreparedStatement* pstmtCheck = con->prepareStatement("SELECT COUNT(*) FROM customers WHERE phone_number = ?");
+        pstmtCheck->setString(1, phoneNumber);
+
+        sql::ResultSet* resCheck = pstmtCheck->executeQuery();
+        resCheck->next();
+        int count = resCheck->getInt(1);
+
+        delete resCheck;
+        delete pstmtCheck;
+
+        if (count == 0) {
+            break;
+        }
+        else {
+            cout << "Phone number already exists. Please enter a different phone number.\n";
+        }
+    }
+
+    sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO customers (customer_name, address, phone_number) VALUES (?, ?, ?)");
+    pstmt->setString(1, customerName);
+    pstmt->setString(2, address);
+    pstmt->setString(3, phoneNumber);
+
+    pstmt->executeUpdate();
+
+    delete pstmt;
+
+    cout << "Customer inserted successfully!\n";
+
+    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT LAST_INSERT_ID()");
+    sql::ResultSet* res = pstmtSelect->executeQuery();
+
+    if (res->next()) {
+        customer_id = res->getInt(1);
+        cout << "Your assigned customer ID is: " << customer_id << endl;
+    }
+
+    delete res;
+    delete pstmtSelect;
+
+    return customer_id;
+}
+
+void Customer::deleteCustomer(sql::Connection* con) {
+    cout << "Enter customer id : ";
+    cin >> customer_id;
+    if (!customerExists(con)) {
+        cout << "Customer with ID " << customer_id << " does not exist!\n";
+        return;
+    }
+
+    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM customers WHERE customer_id = ?");
+    pstmtSelect->setInt(1, customer_id);
+
+    sql::ResultSet* res = pstmtSelect->executeQuery();
+
+    cout << "Deleting customer with ID " << customer_id << ":\n";
+    cout << "ID | Customer Name | Address | Phone Number\n";
+
+    while (res->next()) {
+        cout << res->getInt("customer_id") << " | "
+            << res->getString("customer_name") << " | "
+            << res->getString("address") << " | "
+            << res->getString("phone_number") << endl;
+    }
+
+    delete res;
+    delete pstmtSelect;
+
+    sql::PreparedStatement* pstmtDelete = con->prepareStatement("DELETE FROM customers WHERE customer_id = ?");
+    pstmtDelete->setInt(1, customer_id);
+
+    pstmtDelete->executeUpdate();
+
+    delete pstmtDelete;
+
+    cout << "Customer deleted successfully!\n";
+}
