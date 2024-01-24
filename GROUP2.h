@@ -27,6 +27,18 @@ protected:
     void UpdateProject(sql::Connection* con);
     void DeleteProject(sql::Connection* con);
 };
+     //class customer
+class Customer {
+private:
+    int customer_id;
+
+protected:
+    void displayAllCustomers(sql::Connection* con);
+    void displayCustomerById(sql::Connection* con);
+    bool customerExists(sql::Connection* con);
+    int insertCustomer(sql::Connection* con);
+    void deleteCustomer(sql::Connection* con);
+};
 
 
 
