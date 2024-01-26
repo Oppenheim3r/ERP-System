@@ -39,6 +39,19 @@ protected:
     int insertCustomer(sql::Connection* con);
     void deleteCustomer(sql::Connection* con);
 };
+      // class Vendor
+class Vendor {
+private:
+    int vendor_id;
+
+protected:
+    void displayAllVendors(sql::Connection* con);
+    void displayVendorById(sql::Connection* con);
+    bool vendorExists(sql::Connection* con);
+    int insertVendor(sql::Connection* con);
+    void deleteVendor(sql::Connection* con);
+
+};
 
 
 
