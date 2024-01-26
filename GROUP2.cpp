@@ -443,3 +443,157 @@ void Customer::deleteCustomer(sql::Connection* con) {
 
     cout << "Customer deleted successfully!\n";
 }
+        // class Vendor
+void Vendor::displayAllVendors(sql::Connection* con) {
+    sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM vendors");
+    sql::ResultSet* res = pstmt->executeQuery();
+
+    cout << "Displaying all vendors:\n";
+    cout << "ID | vendor Name | Address | Phone Number\n";
+
+    while (res->next()) {
+        cout << res->getInt("vendor_id") << " | "
+            << res->getString("vendor_name") << " | "
+            << res->getString("address") << " | "
+            << res->getString("phone_number") << endl;
+    }
+
+    delete res;
+    delete pstmt;
+
+    cout << "------------------------------------------\n";
+}
+
+void Vendor::displayVendorById(sql::Connection* con) {
+    cout << "Enter vendor Id : ";
+    cin >> vendor_id;
+    sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM vendors WHERE vendor_id = ?");
+    pstmt->setInt(1, vendor_id);
+
+    sql::ResultSet* res = pstmt->executeQuery();
+
+    cout << "Displaying vendor information for ID " << vendor_id << ":\n";
+    cout << "ID | vendor Name | Address | Phone Number\n";
+
+    while (res->next()) {
+        cout << res->getInt("vendor_id") << " | "
+            << res->getString("vendor_name") << " | "
+            << res->getString("address") << " | "
+            << res->getString("phone_number") << endl;
+    }
+
+    delete res;
+    delete pstmt;
+
+    cout << "------------------------------------------\n";
+}
+
+bool Vendor::vendorExists(sql::Connection* con) {
+    sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM vendors WHERE vendor_id = ?");
+    pstmt->setInt(1, vendor_id);
+
+    sql::ResultSet* res = pstmt->executeQuery();
+
+    bool exists = res->next();
+
+    delete res;
+    delete pstmt;
+
+    return exists;
+}
+
+int Vendor::insertVendor(sql::Connection* con) {
+    string vendorName;
+    string address;
+    string phoneNumber;
+
+    cout << "Enter vendor details:\n";
+
+    cout << "vendor Name: ";
+    getline(cin, vendorName);
+
+    cout << "Address: ";
+    getline(cin, address);
+
+    while (true) {
+        cout << "Phone Number: ";
+        cin >> phoneNumber;
+
+        sql::PreparedStatement* pstmtCheck = con->prepareStatement("SELECT COUNT(*) FROM vendors WHERE phone_number = ?");
+        pstmtCheck->setString(1, phoneNumber);
+
+        sql::ResultSet* resCheck = pstmtCheck->executeQuery();
+        resCheck->next();
+        int count = resCheck->getInt(1);
+
+        delete resCheck;
+        delete pstmtCheck;
+
+        if (count == 0) {
+            break;
+        }
+        else {
+            cout << "Phone number already exists. Please enter a different phone number.\n";
+        }
+    }
+
+    sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO vendors (vendor_name, address, phone_number) VALUES (?, ?, ?)");
+    pstmt->setString(1, vendorName);
+    pstmt->setString(2, address);
+    pstmt->setString(3, phoneNumber);
+
+    pstmt->executeUpdate();
+
+    delete pstmt;
+
+    cout << "vendor inserted successfully!\n";
+
+    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT LAST_INSERT_ID()");
+    sql::ResultSet* res = pstmtSelect->executeQuery();
+
+    if (res->next()) {
+        vendor_id = res->getInt(1);
+        cout << "Your assigned customer ID is: " << vendor_id << endl;
+    }
+
+    delete res;
+    delete pstmtSelect;
+
+    return vendor_id;
+}
+
+void Vendor::deleteVendor(sql::Connection* con) {
+    cout << "Enter vendor Id : ";
+    cin >> vendor_id;
+    if (!vendorExists(con)) {
+        cout << "vendor with ID " << vendor_id << " does not exist!\n";
+        return;
+    }
+
+    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM vendors WHERE vendor_id = ?");
+    pstmtSelect->setInt(1, vendor_id);
+
+    sql::ResultSet* res = pstmtSelect->executeQuery();
+
+    cout << "Deleting vendor with ID " << vendor_id << ":\n";
+    cout << "ID | vendor Name | Address | Phone Number\n";
+
+    while (res->next()) {
+        cout << res->getInt("vendor_id") << " | "
+            << res->getString("vendor_name") << " | "
+            << res->getString("address") << " | "
+            << res->getString("phone_number") << endl;
+    }
+
+    delete res;
+    delete pstmtSelect;
+
+    sql::PreparedStatement* pstmtDelete = con->prepareStatement("DELETE FROM vendors WHERE vendor_id = ?");
+    pstmtDelete->setInt(1, vendor_id);
+
+    pstmtDelete->executeUpdate();
+
+    delete pstmtDelete;
+
+    cout << "vendor deleted successfully!\n";
+}
