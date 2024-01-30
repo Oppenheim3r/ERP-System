@@ -597,3 +597,211 @@ void Vendor::deleteVendor(sql::Connection* con) {
 
     cout << "vendor deleted successfully!\n";
 }
+////////////////////////
+//OrderProject
+void OrderProject::displayAllOrders(sql::Connection* con) {
+    try {
+        sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM orderProject");
+        sql::ResultSet* res = pstmt->executeQuery();
+
+       cout << "Displaying all orders:\n";
+        cout << "ID | Project ID | Customer ID | Amount Paid | Order Date | Date to be Ready\n";
+
+        while (res->next()) {
+            cout << res->getInt("order_id") << " | "
+                << res->getInt("project_id") << " | "
+                << res->getInt("customer_id") << " | "
+                << res->getDouble("amount_paid") << " | "
+                << res->getString("order_date") << " | "
+                << res->getString("date_to_be_ready") << std::endl;
+        }
+
+        delete res;
+        delete pstmt;
+
+        cout << "------------------------------------------\n";
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << std::endl;
+    }
+}
+
+bool OrderProject::orderExistsById(int orderId, sql::Connection* con) {
+    try {
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM orderProject WHERE order_id = ?");
+        pstmtSelect->setInt(1, orderId);
+
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+        bool exists = res->next();
+
+        delete res;
+        delete pstmtSelect;
+
+        return exists;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+        return false;
+    }
+}
+
+void OrderProject::displayOrderById(int orderId, sql::Connection* con) {
+    try {
+        if (!orderExistsById(orderId, con)) {
+            cout << "Order with ID " << orderId << " does not exist!\n";
+            return;
+        }
+
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM orderProject WHERE order_id = ?");
+        pstmtSelect->setInt(1, orderId);
+
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+
+        cout << "Order details for ID " << orderId << ":\n";
+        cout << "ID | Project ID | Customer ID | Amount Paid | Order Date | Date to be Ready\n";
+
+        while (res->next()) {
+            cout << res->getInt("order_id") << " | "
+                << res->getInt("project_id") << " | "
+                << res->getInt("customer_id") << " | "
+                << res->getDouble("amount_paid") << " | "
+                << res->getString("order_date") << " | "
+                << res->getString("date_to_be_ready") <<endl;
+        }
+
+        delete res;
+        delete pstmtSelect;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+    }
+}
+
+void OrderProject::editOrder(sql::Connection* con) {
+    int orderId;
+    double newAmountPaid;
+
+    cout << "Enter Order ID: ";
+    cin >> orderId;
+
+    if (!orderExistsById(orderId, con)) {
+        cout << "Order with ID " << orderId << " does not exist!\n";
+        return;
+    }
+
+    displayOrderById(orderId, con);
+
+   cout << "Enter New Amount Paid: ";
+    cin >> newAmountPaid;
+
+    try {
+        sql::PreparedStatement* pstmt = con->prepareStatement("UPDATE orderProject SET amount_paid = ? WHERE order_id = ?");
+        pstmt->setDouble(1, newAmountPaid);
+        pstmt->setInt(2, orderId);
+
+        pstmt->executeUpdate();
+
+        delete pstmt;
+
+        cout << "Order edited successfully!\n";
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << std::endl;
+    }
+}
+
+void OrderProject::removeOrder(sql::Connection* con) {
+    int orderId;
+
+    cout << "Enter Order ID to delete: ";
+    cin >> orderId;
+
+    if (!orderExistsById(orderId, con)) {
+        cout << "Order with ID " << orderId << " does not exist!\n";
+        return;
+    }
+
+    displayOrderById(orderId, con);
+
+    char confirmation;
+    do {
+      cout << "Are you sure you want to delete this order? (Y/N): ";
+        cin >> confirmation;
+        confirmation = toupper(confirmation);
+
+        if (confirmation == 'Y') {
+            try {
+                sql::PreparedStatement* pstmtDelete = con->prepareStatement("DELETE FROM orderProject WHERE order_id = ?");
+                pstmtDelete->setInt(1, orderId);
+
+                pstmtDelete->executeUpdate();
+
+                delete pstmtDelete;
+
+                cout << "Order deleted successfully!\n";
+            }
+            catch (sql::SQLException& e) {
+               cerr << "SQL Error: " << e.what() << std::endl;
+            }
+        }
+        else if (confirmation == 'N') {
+            cout << "Deletion canceled.\n";
+        }
+        else {
+           cout << "Invalid input. Please enter 'Y' for Yes or 'N' for No.\n";
+        }
+    } while (confirmation != 'Y' && confirmation != 'N');
+}
+void OrderProject::addOrder(sql::Connection* con) {
+    try {
+        int projectId, customerId;
+        double amountPaid, price;
+
+        cout << "Enter Project ID: ";
+        cin >> projectId;
+
+        cout << "Enter Customer ID: ";
+        cin >> customerId;
+
+        
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT price FROM projects WHERE project_id = ?");
+        pstmtSelect->setInt(1, projectId);
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+
+        if (res->next()) {
+             price = res->getDouble("price");
+            cout << "Price of the selected project: " << price << endl;
+        }
+        else {
+            cout << "Project with ID " << projectId << " does not exist!\n";
+            return;
+        }
+        
+        cout << "Enter Amount Paid: ";
+        cin >> amountPaid;
+
+        if (amountPaid >= price) {
+            double change = amountPaid - price;
+            cout << "Change: " << change << endl;
+
+            
+            sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO orderProject (project_id, customer_id, amount_paid) VALUES (?, ?, ?)");
+            pstmt->setInt(1, projectId);
+            pstmt->setInt(2, customerId);
+            pstmt->setDouble(3, price);
+
+            pstmt->executeUpdate();
+
+            delete pstmt;
+        }
+        else {
+            cout << "Amount paid is less than the project price. Please insert the full amount.\n";
+        }
+
+        delete res;
+        delete pstmtSelect;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+    }
+}
