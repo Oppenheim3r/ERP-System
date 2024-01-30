@@ -805,3 +805,273 @@ void OrderProject::addOrder(sql::Connection* con) {
         cerr << "SQL Error: " << e.what() << endl;
     }
 }
+// class OrderProduct
+void OrderProduct::DisplayAllProduct(sql::Connection* con) {
+    try {
+        sql::Statement* stmt = con->createStatement();
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products");
+
+        cout << "Displaying all products :\n";
+        cout << "ID | Product Name | Price \n";
+        while (res->next()) {
+            cout << res->getInt("product_id") << " | " << res->getString("product_name") << " | " << res->getDouble("price") << endl;
+        }
+        delete res;
+        delete stmt;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+    }
+}
+
+bool OrderProduct::CheckTheQuantity(int proId, int quantity, sql::Connection* con) {
+    int reQun;
+    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT quantity FROM products WHERE product_id = ?");
+    pstmtSelect->setInt(1, proId);
+    sql::ResultSet* res = pstmtSelect->executeQuery();
+
+    if (res->next()) {
+        reQun = res->getInt("quantity");
+    }
+    delete res;
+    delete pstmtSelect;
+    if (reQun > quantity)
+        return true;
+    else {
+        cout << "Sorry , The required quantity is not available in stock , The available quantity is less than : " << reQun << endl;
+        return false;
+    }
+
+}
+double OrderProduct::CalculationTheAmount(int proId, int quantity, sql::Connection* con) {
+    double total_price, price;
+    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT price FROM products WHERE product_id = ?");
+    pstmtSelect->setInt(1, proId);
+    sql::ResultSet* res = pstmtSelect->executeQuery();
+
+    if (res->next()) {
+        price = res->getDouble("price");
+        cout << "Price of the selected product : " << price << endl;
+        total_price = price * quantity;
+        cout << "The toatl price is : " << total_price << endl;
+        cout << "Enter the amount : " << endl;
+        return total_price;
+    }
+
+
+    delete res;
+    delete pstmtSelect;
+}
+
+
+
+void OrderProduct::AddOrderProduct(int proId, int cumtomerId, int quantity, double amount_paid, double Total, sql::Connection* con) {
+    bool check;
+
+    if (!CheckTheQuantity(proId, quantity, con))
+    {
+
+    }
+    else {
+        if (amount_paid >= Total) {
+            double change = amount_paid - Total;
+            cout << "Change : " << change << endl;
+            try {
+                sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO orderProduct(product_id,customer_id,quantity_ordered,amount_paid) VALUES (?,?,?,?)");
+                pstmt->setInt(1, proId);
+                pstmt->setInt(2, cumtomerId);
+                pstmt->setInt(3, quantity);
+                pstmt->setDouble(4, amount_paid);
+                pstmt->execute();
+                delete pstmt;
+                check = true;
+                cout << "The order completed successfully" << endl;
+            }
+            catch (sql::SQLException& e) {
+                cerr << "MySQL Exception: " << e.what() << endl;
+                check = false;
+            }
+            if (check) {
+                try {
+                    sql::PreparedStatement* updateStmt = con->prepareStatement("UPDATE products SET quantity = quantity - ? , TimePurchased = TimePurchased + ?  WHERE product_id = ?");
+                    updateStmt->setInt(1, quantity);
+                    updateStmt->setInt(2, quantity);
+                    updateStmt->setInt(3, proId);
+                    updateStmt->execute();
+                    delete updateStmt;
+                }
+                catch (sql::SQLException& e) {
+                    cerr << "MySQL Exception: " << e.what() << endl;
+                }
+
+            }
+
+        }
+        else
+            cout << "Amount paid is less than the project price. Please insert the full amount.\n";
+    }
+
+}
+
+void OrderProduct::DisplayAllProductOrders(sql::Connection* con) {
+    try {
+        sql::Statement* stmt = con->createStatement();
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM orderProduct");
+        cout << "Displaying all orders:\n";
+        cout << "ID | Product ID | Customer ID| Quantity | Amount Paid | Order Date | \n";
+        while (res->next()) {
+            cout << res->getInt("order_id") << " | "
+                << res->getInt("product_id") << " | "
+                << res->getInt("customer_id") << " | "
+                << res->getInt("quantity_ordered") << " | "
+                << res->getDouble("amount_paid") << " | "
+                << res->getString("order_date") << " | "
+                << endl;
+        }
+        delete res;
+        delete stmt;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+    }
+}
+
+bool OrderProduct::ProductOrderExistsById(int orderId, sql::Connection* con) {
+    try {
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM orderProduct WHERE order_id = ?");
+        pstmtSelect->setInt(1, orderId);
+
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+        bool exists = res->next();
+
+        delete res;
+        delete pstmtSelect;
+
+        return exists;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+        return false;
+    }
+}
+
+void OrderProduct::DisplayProductOrderById(int orderId, sql::Connection* con) {
+    try {
+
+        if (!ProductOrderExistsById(orderId, con)) {
+            cout << "Order with ID " << orderId << " does not exist!\n";
+        }
+
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM orderProduct WHERE order_id = ?");
+        pstmtSelect->setInt(1, orderId);
+
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+
+
+        cout << "Order details for ID " << orderId << ":\n";
+        cout << "ID | Product ID | Customer ID| Quantity | Amount Paid | Order Date | \n";
+
+        while (res->next()) {
+            cout << res->getInt("order_id") << " | "
+                << res->getInt("product_id") << " | "
+                << res->getInt("customer_id") << " | "
+                << res->getInt("quantity_ordered") << " | "
+                << res->getDouble("amount_paid") << " | "
+                << res->getString("order_date") << " | "
+                << endl;
+        }
+
+        delete res;
+        delete pstmtSelect;
+
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+
+    }
+}
+
+void OrderProduct::RemoveProductOrder(sql::Connection* con) {
+    int orderId;
+
+    cout << "Enter Order ID to delete: ";
+    cin >> orderId;
+
+    if (!ProductOrderExistsById(orderId, con)) {
+        cout << "Order with ID " << orderId << " does not exist!\n";
+        return;
+    }
+
+    char confirmation;
+    do {
+        cout << "Are you sure you want to delete this order? (Y/N): ";
+        cin >> confirmation;
+        confirmation = toupper(confirmation);
+
+        if (confirmation == 'Y') {
+            try {
+                sql::PreparedStatement* pstmtDelete = con->prepareStatement("DELETE FROM orderProduct WHERE order_id = ?");
+                pstmtDelete->setInt(1, orderId);
+
+                pstmtDelete->executeUpdate();
+
+                delete pstmtDelete;
+
+                cout << "Order deleted successfully!\n";
+            }
+            catch (sql::SQLException& e) {
+                cerr << "SQL Error: " << e.what() << endl;
+            }
+        }
+        else if (confirmation == 'N') {
+            cout << "Deletion canceled.\n";
+        }
+        else {
+            cout << "Invalid input. Please enter 'Y' for Yes or 'N' for No.\n";
+        }
+    } while (confirmation != 'Y' && confirmation != 'N');
+}
+
+void OrderProduct::EditProductOrder(sql::Connection* con) {
+    int order_Id;
+    double amount1;
+    double amount2;
+    int proId;
+    int quantity;
+    int customerId;
+    cout << "Enter The order ID you want to change : \n ";
+    cin >> order_Id;
+    DisplayProductOrderById(order_Id, con);
+
+    try {
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM orderProduct WHERE order_id = ?");
+        pstmtSelect->setInt(1, order_Id);
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+        if (res->next()) {
+            customerId = res->getInt("customer_id");
+            amount1 = res->getDouble("amount_paid");
+        }
+        else {
+            cout << "Oreder with ID " << order_Id << " does not exist";
+        }
+
+        delete res;
+        delete pstmtSelect;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+    }
+    cout << "You have paid :" << amount1 << endl;
+    RemoveProductOrder(con);
+    cout << "Enter the Details of the new order : \n";
+    DisplayAllProduct(con);
+    cout << "\nEnter Product number : ";
+    cin >> proId;
+    cout << "\nEnter the quantity : ";
+    cin >> quantity;
+    double Total =CalculationTheAmount(proId, quantity, con);
+    cin >> amount2;
+    amount2 = amount1 + amount2;
+    AddOrderProduct(proId, customerId, quantity, amount2, Total, con);
+
+}
