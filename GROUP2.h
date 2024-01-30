@@ -52,7 +52,15 @@ protected:
     void deleteVendor(sql::Connection* con);
 
 };
-
+class OrderProject {
+public:
+    void displayAllOrders(sql::Connection* con);
+    bool orderExistsById(int orderId, sql::Connection* con);
+    void displayOrderById(int orderId, sql::Connection* con);
+    void editOrder(sql::Connection* con);
+    void removeOrder(sql::Connection* con);
+    void addOrder(sql::Connection* con);
+};
 
 
 
