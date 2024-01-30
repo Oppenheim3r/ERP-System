@@ -61,6 +61,20 @@ public:
     void removeOrder(sql::Connection* con);
     void addOrder(sql::Connection* con);
 };
+// class OrederProduct
+class OrederProduct : public Product {
+protected:
+    void DisplayAllProduct(sql::Connection* con);
+    bool checkTheQuantity(int proId, int quantity, sql::Connection* con);
+    double calculationTheAmount(int proId, int quantity, sql::Connection* con);
+    void AddOrederProduct(int proId, int cumtomerId, int quantity, double amount_paid, double Total, sql::Connection* con);
+    void displayAllProductOrders(sql::Connection* con);
+    bool productOrderExistsById(int orderId, sql::Connection* con);
+    void displayProductOrderById(int orderId, sql::Connection* con);
+    void removeProductOrder(sql::Connection* con);
+    void editProductOrder(sql::Connection* con);
+    // Add other functions as needed
+};
 
 
 
