@@ -476,7 +476,7 @@ double SalaryManagement::TotalSalaries(sql::Connection* con) {
     catch (sql::SQLException& e) {
         cerr << "MySQL Exception: " << e.what() << endl;
     }
-
+cout << "Total Salaries is : " << Total << endl;
     return Total;
 }
 
