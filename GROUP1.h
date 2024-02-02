@@ -13,7 +13,7 @@ protected:
     double salary;
     string position;
     string name;
-
+bool EmployeeExists(sql::Connection* con, int);
 public:
     info();
 };
