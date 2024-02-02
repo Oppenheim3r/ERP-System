@@ -148,45 +148,48 @@ void Jobposition::RemoveEmployee(sql::Connection* con) {
             int idToDelete;
             cout << "Enter the ID of the employee you want to delete :  ";
             cin >> idToDelete;
-            cout << "\nAre you sure you want to delete this employee ?";
-            cout << "\n1. Yes";
-            cout << "\n2. No";
-            cin >> x;
-            switch (x) {
-            case 1:
-                sure = true;
-                break;
-            case 2:
-                sure = false;
-                break;
-            default:
-                cout << "Try again , must be 1 or 2 ";
-            }
-            if (sure == true) {
-                try {
-                    sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM Employees WHERE id = ?");
-                    deleteStmt->setInt(1, idToDelete);
-                    deleteStmt->execute();
-                    delete deleteStmt;
-
-
-                    EmployeeCount--;
-
-                    cout << "Employee with ID " << idToDelete << " removed successfully." << endl;
-                }
-                catch (sql::SQLException& e) {
-                    cerr << "MySQL Exception: " << e.what() << endl;
-                }
-            }
-            else
-                cout << "\nThe process has been stopped . ";
-           
-            
+                    if (!EmployeeExists(con, idToDelete)) {
+            cout << "Employee With ID " << idToDelete << " does not exists ." << endl;
+        }else{cout << "\nAre you sure you want to delete this employee ?";
+        cout << "\n1. Yes";
+        cout << "\n2. No\n";
+        cin >> x;
+        switch (x) {
+        case 1:
+            sure = true;
+            break;
+        case 2:
+            sure = false;
+            break;
+        default:
+            cout << "Try again , must be 1 or 2 ";
         }
-        catch (sql::SQLException& e) {
-            cerr << "MySQL Exception: " << e.what() << endl;
+        if (sure == true) {
+            try {
+                sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM Employees WHERE id = ?");
+                deleteStmt->setInt(1, idToDelete);
+                deleteStmt->execute();
+                delete deleteStmt;
+
+
+                EmployeeCount--;
+
+                cout << "Employee with ID " << idToDelete << " removed successfully." << endl;
+            }
+            catch (sql::SQLException& e) {
+                cerr << "MySQL Exception: " << e.what() << endl;
+            }
         }
+        else
+            cout << "\nThe process has been stopped . ";
+       
+        
+    }}
+        
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
     }
+}   
 }
        // class HR
 HumanResources::HumanResources() {
