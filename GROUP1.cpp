@@ -23,6 +23,19 @@ info::info() {
     }
 }
 int info::EmployeeCount = 0;
+bool info::EmployeeExists(sql::Connection* con,int Emp_id) {
+    sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM employees WHERE id = ?");
+    pstmt->setInt(1,Emp_id);
+
+    sql::ResultSet* res = pstmt->executeQuery();
+
+    bool exists = res->next();
+
+    delete res;
+    delete pstmt;
+
+    return exists;
+}
         // class Employees
 Employee::Employee() {
 }
