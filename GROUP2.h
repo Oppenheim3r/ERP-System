@@ -34,6 +34,8 @@ private:
     int customer_id;
 
 protected:
+    int insertCustomer(bool& check, sql::Connection* con);
+    bool Login(int& customer_id, sql::Connection* con);
     void displayAllCustomers(sql::Connection* con);
     void displayCustomerById(sql::Connection* con);
     bool customerExists(sql::Connection* con);
