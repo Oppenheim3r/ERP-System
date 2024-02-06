@@ -11,6 +11,7 @@ public:
     Product() {}
 
 protected:
+ void displayProductById(int proId, sql::Connection* con);
     void DisplayAllProduct(sql::Connection* con);
     void AddProduct(sql::Connection* con);
     bool ProductExists(sql::Connection* con, int productId);
