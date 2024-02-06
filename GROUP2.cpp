@@ -26,6 +26,32 @@ void Product::DisplayAllProduct(sql::Connection* con) {
     }
 
 }
+void Product::displayProductById(int proId, sql::Connection* con) {
+    try {
+        if (!ProductExists(con, proId)) {
+            cout << "Product with ID " << proId << " does not exist!\n";
+            return;
+        }
+
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM products WHERE product_id = ?");
+        pstmtSelect->setInt(1, proId);
+
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+
+        cout << "Product details for ID " << proId << ":\n";
+        cout << "Product ID |Product Name | Price \n";
+
+        while (res->next()) {
+            cout << res->getInt("product_id") << " | " << res->getString("product_name") << " | " << res->getDouble("price") << endl;
+        }
+
+        delete res;
+        delete pstmtSelect;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+    }
+}
 void Product::AddProduct(sql::Connection* con) {
     string proname;
     double proprice;
