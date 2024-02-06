@@ -469,6 +469,102 @@ void Customer::deleteCustomer(sql::Connection* con) {
 
     cout << "Customer deleted successfully!\n";
 }
+int Customer::insertCustomer(bool &check,sql::Connection* con) {
+    string customerName;
+    string address;
+    string phoneNumber;
+
+    
+
+    cout << "Name: ";
+    cin >> customerName;
+
+    cout << "Address: ";
+    cin >> address;
+
+
+    while (true) {
+        cout << "Phone Number: ";
+        cin >> phoneNumber;
+
+        sql::PreparedStatement* pstmtCheck = con->prepareStatement("SELECT COUNT(*) FROM customers WHERE phone_number = ?");
+        pstmtCheck->setString(1, phoneNumber);
+
+        sql::ResultSet* resCheck = pstmtCheck->executeQuery();
+        resCheck->next();
+        int count = resCheck->getInt(1);
+
+        delete resCheck;
+        delete pstmtCheck;
+
+        if (count == 0) {
+            break;
+        }
+        else {
+            cout << "Phone number already exists. Please enter a different phone number.\n";
+        }
+    }
+    try {sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO customers (customer_name, address, phone_number) VALUES (?, ?, ?)");
+    pstmt->setString(1, customerName);
+    pstmt->setString(2, address);
+    pstmt->setString(3, phoneNumber);
+
+    pstmt->executeUpdate();
+
+    delete pstmt;
+
+    cout << "Done !\n";
+    check = true;
+
+    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT LAST_INSERT_ID()");
+    sql::ResultSet* res = pstmtSelect->executeQuery();
+
+    if (res->next()) {
+        customer_id = res->getInt(1);
+        //cout << "Your assigned customer ID is: " << customer_id << endl;
+
+    }
+
+    delete res;
+    delete pstmtSelect;
+
+    return customer_id;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+        check = false;
+    }
+    
+}
+bool Customer::Login(int& customer_id, sql::Connection* con) {
+    string name;
+    string phone_number;
+    cout << "Enter your Name :";
+    cin >> name;
+    cout << "Enter your phone Number :";
+    cin >> phone_number;
+    try {
+        sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM customers WHERE customer_name = ? and phone_number = ?");
+        pstmt->setString(1, name);
+        pstmt->setString(2, phone_number);
+
+        sql::ResultSet* res = pstmt->executeQuery();
+
+        bool exists = res->next();
+        if (exists == true) {
+            cout << "Welcom " << name<<endl;
+            customer_id= res->getInt("customer_id");
+          
+        }
+        delete res;
+        delete pstmt;
+        return exists;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+    }
+}
+
         // class Vendor
 void Vendor::displayAllVendors(sql::Connection* con) {
     sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM vendors");
