@@ -81,6 +81,7 @@ protected:
     void EditProductOrder(sql::Connection* con);
 };
 class WorkOn : public Project, public HumanResources {
+//Has to be changed to proteced after verifying 
 public:
     void insertEmployeeToProject(sql::Connection* con);
     void DisplayProjectEmployees(sql::Connection* con);
