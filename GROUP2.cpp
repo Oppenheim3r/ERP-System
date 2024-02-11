@@ -1197,3 +1197,146 @@ void OrderProduct::EditProductOrder(sql::Connection* con) {
     AddOrderProduct(proId, customerId, quantity, amount2, Total, con);
 
 }
+
+////////////////////////////////////
+//WorkOn
+// WorkOn.cpp
+
+
+
+void WorkOn::insertEmployeeToProject(sql::Connection* con) {
+    int project_id, Emp_id;
+    cout << "Projects Details :\n ";
+    DisplayAllProjects(con);
+    cout << "\nEmployees Details :\n ";
+    DisplayAllEmp(con);
+    cout << "\nEnter The Employee ID and the ID of The Project he Works on : " << endl;
+    cout << "Employee ID : ";
+    cin >> Emp_id;
+    if (!EmployeeExists(con, Emp_id)) {
+        cout << "Employee with ID :" << Emp_id << " does not exist." << endl;
+    }
+    else {
+        cout << "Project ID : ";
+        cin >> project_id;
+        if (!ProjectExists(con, project_id)) {
+            cout << "Project with ID : " << project_id << " does not exist." << endl;
+        }
+        else {
+            try {
+                sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO workon(project_id,employee_id) VALUES (?, ?)");
+                pstmt->setInt(1, project_id);
+                pstmt->setInt(2, Emp_id);
+                pstmt->execute();
+                delete pstmt;
+                cout << "The operation was completed successfully! " << endl;
+            }
+            catch (sql::SQLException& e) {
+                cerr << "MySQL Exception: " << e.what() << endl;
+            }
+        }
+    }
+}
+
+void WorkOn::DisplayProjectEmployees(sql::Connection* con) {
+    try {
+        sql::Statement* stmt = con->createStatement();
+        sql::ResultSet* res = stmt->executeQuery("SELECT projects.project_id, projects.project_name, employees.id, employees.name FROM workon JOIN projects ON workon.project_id = projects.project_id JOIN employees ON workon.employee_id = employees.id");
+        cout << "Project ID  |  Project Name  |  Employee ID  | Employee Name " << endl;
+        while (res->next()) {
+            cout << res->getInt("project_id") << "  |  " << res->getString("project_name") << " | " << res->getInt("id") << "  |  " << res->getString("name") << endl;
+        }
+        delete res;
+        delete stmt;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+    }
+}
+
+void WorkOn::deleteEmployeeFromProject(sql::Connection* con) {
+    DisplayProjectEmployees(con);
+    int emp_id, project_id;
+    cout << "Enter Employee ID : ";
+    cin >> emp_id;
+    if (!EmployeeExists(con, emp_id)) {
+        cout << "Employee does not exist." << endl;
+    }
+    else {
+        cout << "Enter Project ID : ";
+        cin >> project_id;
+        if (!ProjectExists(con, project_id)) {
+            cout << "Project does not exist." << endl;
+        }
+        else {
+            try {
+                sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM workon WHERE project_id = ? and employee_id=?");
+                deleteStmt->setInt(1, emp_id);
+                deleteStmt->setInt(2, project_id);
+                deleteStmt->execute();
+                delete deleteStmt;
+                cout << "The operation was completed successfully! " << endl;
+            }
+            catch (sql::SQLException& e) {
+                cerr << "MySQL Exception: " << e.what() << endl;
+            }
+        }
+    }
+}
+
+void WorkOn::updateProjectEmployees(sql::Connection* con) {
+    int c;
+    int emp_id, project_id;
+    cout << "1. Change Employee " << endl;
+    cout << "2. Change Project " << endl;
+    cout << "Choose: ";
+    cin >> c;
+    switch (c) {
+    case 1: {
+        cout << "Enter Project ID : ";
+        cin >> project_id;
+        if (!ProjectExists(con, project_id)) {
+            cout << "Project with ID " << project_id << " does not exist." << endl;
+        }
+        else {
+            cout << "Enter The New Employee ID : ";
+            cin >> emp_id;
+            if (!EmployeeExists(con, emp_id)) {
+                cout << "Employee with ID " << emp_id << " does not exist." << endl;
+            }
+            else {
+                sql::PreparedStatement* updateStmt = con->prepareStatement("UPDATE workon SET employee_id = ? WHERE project_id = ?");
+                updateStmt->setInt(1, emp_id);
+                updateStmt->setInt(2, project_id);
+                updateStmt->execute();
+                delete updateStmt;
+            }
+        }
+    }
+          break;
+    case 2: {
+        cout << "Enter Employee ID : ";
+        cin >> emp_id;
+        if (!EmployeeExists(con, emp_id)) {
+            cout << "Employee with ID " << emp_id << " does not exist." << endl;
+        }
+        else {
+            cout << "Enter The New Project ID : ";
+            cin >> project_id;
+            if (!ProjectExists(con, project_id)) {
+                cout << "Project with ID " << project_id << " does not exist." << endl;
+            }
+            else {
+                sql::PreparedStatement* updateStmt = con->prepareStatement("UPDATE workon SET project_id = ? WHERE employee_id = ?");
+                updateStmt->setInt(1, project_id);
+                updateStmt->setInt(2, emp_id);
+                updateStmt->execute();
+                delete updateStmt;
+            }
+        }
+    }
+          break;
+    default:
+        cout << "Wrong input." << endl;
+    }
+}
