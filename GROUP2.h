@@ -80,7 +80,13 @@ protected:
     void RemoveProductOrder(sql::Connection* con);
     void EditProductOrder(sql::Connection* con);
 };
-
+class WorkOn : public Project, public HumanResources {
+public:
+    void insertEmployeeToProject(sql::Connection* con);
+    void DisplayProjectEmployees(sql::Connection* con);
+    void deleteEmployeeFromProject(sql::Connection* con);
+    void updateProjectEmployees(sql::Connection* con);
+};
 
 
 #endif // GROUP2_H
