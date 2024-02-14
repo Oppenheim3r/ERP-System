@@ -13,11 +13,15 @@ void Product::DisplayAllProduct(sql::Connection* con) {
         sql::Statement* stmt = con->createStatement();
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products");
 
-        while (res->next()) {
-            cout << "Product ID : " << res->getInt("product_id") << "   " << "Product Name : " << res->getString("product_name") << "   " <<
-                "Product Price : " << res->getDouble("price") << "    " << "remaining number of product : " << res->getInt("quantity") << "   "
-                << "Number of orders :" << res->getInt("TimePurchased") << endl;
-        }
+      cout << "Displaying all Products :\n";
+cout << "ID | Product Name | Price | Quantity | Time Purchased\n";
+while (res->next()) {
+    cout << res->getInt("product_id") << " | "
+        << res->getString("product_name") << " | "
+        << res->getDouble("price") << " | "
+        << res->getString("quantity") << "| "<<
+        res->getInt("TimePurchased") << endl;
+}
         delete res;
         delete stmt;
     }
