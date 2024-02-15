@@ -778,21 +778,19 @@ void OrderProject::displayAllOrders(sql::Connection* con) {
     }
 }
 
-void OrderProject::displayAllOrders(sql::Connection* con) {
+void OrderProject::DisplayAllProjects(sql::Connection* con) {
     try {
-        sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM orderProject");
+        sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM projects");
         sql::ResultSet* res = pstmt->executeQuery();
 
-        cout << "Displaying all orders:\n";
-        cout << "ID | Project ID | Customer ID | Amount Paid | Order Date | Date to be Ready\n";
+        cout << "Displaying all projects:\n";
+        cout << "ID | Project Name | Price | Time Needed \n";
 
         while (res->next()) {
-            cout << res->getInt("order_id") << " | "
-                << res->getInt("project_id") << " | "
-                << res->getInt("customer_id") << " | "
-                << res->getDouble("amount_paid") << " | "
-                << res->getString("order_date") << " | "
-                << res->getString("date_to_be_ready") << std::endl;
+            cout << res->getInt("project_id") << " | "
+                << res->getString("project_name") << " | "
+                << res->getDouble("price") << " | "
+                << res->getString("time_needed") << endl;
         }
 
         delete res;
@@ -801,7 +799,7 @@ void OrderProject::displayAllOrders(sql::Connection* con) {
         cout << "------------------------------------------\n";
     }
     catch (sql::SQLException& e) {
-        cerr << "SQL Error: " << e.what() << std::endl;
+        cerr << "MySQL Exception: " << e.what() << endl;
     }
 }
 bool OrderProject::orderExistsById(int orderId, sql::Connection* con) {
