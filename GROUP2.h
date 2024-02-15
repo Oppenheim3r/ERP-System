@@ -63,7 +63,7 @@ public:
     void displayOrderById(int orderId, sql::Connection* con);
     void editOrder(sql::Connection* con);
     void removeOrder(sql::Connection* con);
-    void addOrder(sql::Connection* con);
+    void addOrder(int Project_id, int customer_id, double amount_paid, sql::Connection* con);
 };
 // class OrederProduct
 class OrderProduct : public Product {
