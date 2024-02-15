@@ -59,6 +59,7 @@ protected:
 class OrderProject : protected Project {
 public:
     void displayAllOrders(sql::Connection* con);
+    void DisplayAllProjects(sql::Connection* con);
     bool orderExistsById(int orderId, sql::Connection* con);
     void displayOrderById(int orderId, sql::Connection* con);
     void editOrder(sql::Connection* con);
