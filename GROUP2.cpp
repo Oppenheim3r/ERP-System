@@ -778,6 +778,32 @@ void OrderProject::displayAllOrders(sql::Connection* con) {
     }
 }
 
+void OrderProject::displayAllOrders(sql::Connection* con) {
+    try {
+        sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM orderProject");
+        sql::ResultSet* res = pstmt->executeQuery();
+
+        cout << "Displaying all orders:\n";
+        cout << "ID | Project ID | Customer ID | Amount Paid | Order Date | Date to be Ready\n";
+
+        while (res->next()) {
+            cout << res->getInt("order_id") << " | "
+                << res->getInt("project_id") << " | "
+                << res->getInt("customer_id") << " | "
+                << res->getDouble("amount_paid") << " | "
+                << res->getString("order_date") << " | "
+                << res->getString("date_to_be_ready") << std::endl;
+        }
+
+        delete res;
+        delete pstmt;
+
+        cout << "------------------------------------------\n";
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << std::endl;
+    }
+}
 bool OrderProject::orderExistsById(int orderId, sql::Connection* con) {
     try {
         sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM orderProject WHERE order_id = ?");
