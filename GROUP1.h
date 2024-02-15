@@ -69,7 +69,12 @@ protected:
     double TotalSalaries(sql::Connection* con);
     void ChangeSalary(sql::Connection* con);
 };
-
+class AddingEmployeesToWork {
+public:
+    bool checkEmployeeExist(sql::Connection* con, const string& email);
+    void displayEmployeesWithCredentials(sql::Connection* con);
+    void assignPassword(sql::Connection* con);
+};
 
 
 
