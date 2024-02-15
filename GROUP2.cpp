@@ -193,6 +193,32 @@ void Project::DisplayAllProjects(sql::Connection* con) {
 
     cout << "------------------------------------------\n";
 }
+void Project::displayProjectById(int proId, sql::Connection* con) {
+    try {
+        if (!ProjectExists(con, proId)) {
+            cout << "Project with ID " << proId << " does not exist!\n";
+            return;
+        }
+
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM projects WHERE project_id = ?");
+        pstmtSelect->setInt(1, proId);
+
+        sql::ResultSet* res = pstmtSelect->executeQuery();
+
+        cout << "Project details for ID " << proId << ":\n";
+        cout << "Project ID |Project Name | Price | Time needed\n";
+
+        while (res->next()) {
+            cout << res->getInt("project_id") << " | " << res->getString("project_name") << " | " << res->getDouble("price") << " | " << res->getInt("time_needed") << endl;
+        }
+
+        delete res;
+        delete pstmtSelect;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+    }
+}
 
 bool Project::ProjectExists(sql::Connection* con, int projectId) {
     sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM projects WHERE project_id = ?");
