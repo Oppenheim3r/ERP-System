@@ -89,5 +89,12 @@ public:
     void updateProjectEmployees(sql::Connection* con);
 };
 
+class ProductsToOrder {
+public:
+	void productsToOrder(sql::Connection* con);
+	void displayApprovedProducts(sql::Connection* con);
+	void insertApprovedProducts(sql::Connection* con);
+};
+
 
 #endif // GROUP2_H
