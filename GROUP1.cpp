@@ -236,11 +236,11 @@ void HumanResources::DisplayAllEmp(sql::Connection* con) {
     try {
         sql::Statement* stmt = con->createStatement();
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees");
-
-        while (res->next()) {
-            cout << "ID: " << res->getInt("id") << ", Name: " << res->getString("name") << ", Email:  " << res->getString("email")
-                << ",Position :" << res->getString("position") << ", Salary :" << res->getDouble("salary") << endl;
-        }
+ cout << "ID" << "   |   " << "Name " << "   |   " << "Email" << "   |   " << "Position" << "   |   " << "Salary" << endl;
+ while (res->next()) {
+     cout <<  res->getInt("id") << "   |   " << res->getString("name") << "   |   " << res->getString("email")
+         << "   |   " << res->getString("position") << "   |   " << res->getDouble("salary") << endl;
+ }
         delete res;
         delete stmt;
 
