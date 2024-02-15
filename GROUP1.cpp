@@ -523,3 +523,100 @@ void SalaryManagement::ChangeSalary(sql::Connection* con) {
 }
 
 
+
+
+bool AddingEmployeesToWork::checkEmployeeExist(sql::Connection* con, const string& email) {
+    try {
+        sql::PreparedStatement* pstmt = con->prepareStatement("SELECT COUNT(*) FROM employees WHERE email = ?");
+        pstmt->setString(1, email);
+
+        sql::ResultSet* res = pstmt->executeQuery();
+        res->next();
+        int count = res->getInt(1);
+
+        delete res;
+        delete pstmt;
+
+        return count > 0;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+        return false;
+    }
+}
+void AddingEmployeesToWork::displayEmployeesWithCredentials(sql::Connection* con) {
+    try {
+        sql::Statement* stmt = con->createStatement();
+        sql::ResultSet* res = stmt->executeQuery("SELECT email, password FROM employees WHERE password IS NOT NULL");
+
+        cout << "Employees with Email and Password:\n";
+        cout << "Email | Password\n";
+
+        while (res->next()) {
+            cout << res->getString("email") << " | " << res->getString("password") << endl;
+        }
+
+        delete res;
+        delete stmt;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+    }
+}
+void AddingEmployeesToWork::assignPassword(sql::Connection* con) {
+    string email;
+    cout << "Enter employee email: ";
+    cin >> email;
+
+    if (checkEmployeeExist(con, email)) {
+        int choice;
+        cout << "Choose an option:\n";
+        cout << "1. Add a new password\n";
+        cout << "2. Change the existing password\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1 || choice == 2) {
+
+            cout << "Enter the new password: ";
+            string newPassword;
+            cin >> newPassword;
+
+            try {
+                sql::PreparedStatement* pstmt;
+
+                if (choice == 1) {
+
+                    pstmt = con->prepareStatement("UPDATE employees SET password = ? WHERE email = ?");
+                }
+                else {
+
+                    pstmt = con->prepareStatement("UPDATE employees SET password = ? WHERE email = ?");
+                }
+
+                pstmt->setString(1, newPassword);
+                pstmt->setString(2, email);
+                pstmt->execute();
+                delete pstmt;
+
+                if (choice == 1) {
+                    cout << "Password added successfully!\n";
+                }
+                else {
+                    cout << "Password changed successfully!\n";
+                }
+            }
+            catch (sql::SQLException& e) {
+                cerr << "MySQL Exception: " << e.what() << endl;
+            }
+        }
+        else {
+            cout << "Invalid choice. Please enter '1' to add a new password or '2' to change the existing password.\n";
+        }
+    }
+    else {
+        cout << "Employee with email " << email << " does not exist.\n";
+    }
+}
+
+
