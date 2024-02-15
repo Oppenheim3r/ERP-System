@@ -23,6 +23,7 @@ protected:
 class Project {
 protected:
     void DisplayAllProjects(sql::Connection* con);
+    void displayProjectById(int proId, sql::Connection* con);
     bool ProjectExists(sql::Connection* con, int projectId);
     void InsertProject(sql::Connection* con);
     void UpdateProject(sql::Connection* con);
