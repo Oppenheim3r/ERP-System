@@ -1344,3 +1344,135 @@ void WorkOn::updateProjectEmployees(sql::Connection* con) {
         cout << "Wrong input." << endl;
     }
 }
+
+// class products to order
+void ProductsToOrder::productsToOrder(sql::Connection* con) {
+	int number;
+	cout << "Enter The maximum quantity: ";
+	cin >> number;
+
+	try {
+		sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM products WHERE quantity <= ?");
+		pstmtSelect->setInt(1, number);
+		sql::ResultSet* res = pstmtSelect->executeQuery();
+
+		cout << "Product Details :" << endl;
+		cout << "Product ID | Product name | Price | Quantity \n";
+		while (res->next()) {
+			cout << res->getInt("product_id") << " | "
+				<< res->getString("product_name") << " | "
+				<< res->getDouble("price") << " | "
+				<< res->getInt("quantity")
+				<< endl;
+		}
+		delete res;
+		delete pstmtSelect;
+	}
+	catch (sql::SQLException& e) {
+		cerr << "SQL Error: " << e.what() << endl;
+	}
+
+	string product_name, vendor_name;
+	double price;
+	int quantity;
+	cout << "\nOrder a product." << endl;
+	cout << "Enter the details of the product: " << endl;
+	cout << "Enter product name: ";
+	cin >> product_name;
+	cout << "Enter vendor name: ";
+	cin >> vendor_name;
+	cout << "Enter the price: ";
+	cin >> price;
+	cout << "Enter the quantity: ";
+	cin >> quantity;
+
+	try {
+		sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO productsToBuy(product_name, vendor_name, price, quantity) VALUES (?, ?, ?, ?)");
+		pstmt->setString(1, product_name);
+		pstmt->setString(2, vendor_name);
+		pstmt->setDouble(3, price);
+		pstmt->setInt(4, quantity);
+		pstmt->execute();
+		delete pstmt;
+		cout << "The order has been sent successfully." << endl;
+	}
+	catch (sql::SQLException& e) {
+		cerr << "MySQL Exception: " << e.what() << endl;
+	}
+}
+
+void ProductsToOrder::displayApprovedProducts(sql::Connection* con) {
+	try {
+		sql::Statement* stmt = con->createStatement();
+		sql::ResultSet* res = stmt->executeQuery("SELECT * FROM productsToBuy WHERE approve = true");
+
+		if (!res->next()) {
+			cout << "No products with approved status found in productsToBuy.\n";
+		}
+		else {
+			cout << "Approved Products Details :" << endl;
+			cout << "Product Name | Vendor Name | Price | Quantity \n";
+			do {
+				cout << res->getString("product_name") << " | "
+					<< res->getString("vendor_name") << " | "
+					<< res->getDouble("price") << " | "
+					<< res->getInt("quantity")
+					<< endl;
+			} while (res->next());
+
+			char choice;
+			cout << "\nDo you want to insert these products into the products table? (Y/N): ";
+			cin >> choice;
+			if (toupper(choice) == 'Y') {
+				insertApprovedProducts(con);
+			}
+		}
+
+		delete res;
+		delete stmt;
+	}
+	catch (sql::SQLException& e) {
+		cerr << "SQL Error: " << e.what() << endl;
+	}
+}
+
+void ProductsToOrder::insertApprovedProducts(sql::Connection* con) {
+		try {
+			sql::Statement* stmt = con->createStatement();
+			sql::ResultSet* res = stmt->executeQuery("SELECT * FROM productsToBuy WHERE approve = true");
+
+			while (res->next()) {
+				string product_name = res->getString("product_name");
+				string vendor_name = res->getString("vendor_name");
+				double price = res->getDouble("price");
+				int quantity = res->getInt("quantity");
+
+				try {
+					sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO products(product_name, vendor_name, price, quantity) VALUES (?, ?, ?, ?)");
+					pstmt->setString(1, product_name);
+					pstmt->setString(2, vendor_name);
+					pstmt->setDouble(3, price);
+					pstmt->setInt(4, quantity);
+					pstmt->execute();
+					delete pstmt;
+				}
+				catch (sql::SQLException& e) {
+					cerr << "MySQL Exception: " << e.what() << endl;
+				}
+			}
+
+
+			sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM productsToBuy WHERE approve = true");
+			deleteStmt->execute();
+			delete deleteStmt;
+
+			delete res;
+			delete stmt;
+
+			cout << "Products inserted into the products table successfully, and removed from productsToBuy." << endl;
+		}
+		catch (sql::SQLException& e) {
+			cerr << "SQL Error: " << e.what() << endl;
+		}
+	}
+
