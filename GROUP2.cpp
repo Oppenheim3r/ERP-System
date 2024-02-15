@@ -904,57 +904,67 @@ void OrderProject::removeOrder(sql::Connection* con) {
         }
     } while (confirmation != 'Y' && confirmation != 'N');
 }
-void OrderProject::addOrder(sql::Connection* con) {
+void OrderProject::addOrder(int Project_id, int customer_id, double amount_paid, sql::Connection* con) {
+    double price = 0;
+    bool check = true;
     try {
-        int projectId, customerId;
-        double amountPaid, price;
-
-        cout << "Enter Project ID: ";
-        cin >> projectId;
-
-        cout << "Enter Customer ID: ";
-        cin >> customerId;
-
-        
         sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT price FROM projects WHERE project_id = ?");
-        pstmtSelect->setInt(1, projectId);
+        pstmtSelect->setInt(1, Project_id);
         sql::ResultSet* res = pstmtSelect->executeQuery();
 
         if (res->next()) {
-             price = res->getDouble("price");
+            price = res->getDouble("price");
             cout << "Price of the selected project: " << price << endl;
         }
         else {
-            cout << "Project with ID " << projectId << " does not exist!\n";
+            cout << "Project with ID " << Project_id << " does not exist!\n";
             return;
         }
-        
-        cout << "Enter Amount Paid: ";
-        cin >> amountPaid;
-
-        if (amountPaid >= price) {
-            double change = amountPaid - price;
+        if (amount_paid >= price) {
+            double change = amount_paid - price;
             cout << "Change: " << change << endl;
 
-            
-            sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO orderProject (project_id, customer_id, amount_paid) VALUES (?, ?, ?)");
-            pstmt->setInt(1, projectId);
-            pstmt->setInt(2, customerId);
-            pstmt->setDouble(3, price);
+            try {
+                sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO orderProject (project_id, customer_id, amount_paid) VALUES (?, ?, ?)");
+                pstmt->setInt(1, Project_id);
+                pstmt->setInt(2, customer_id);
+                pstmt->setDouble(3, price);
+                pstmt->executeUpdate();
+                delete pstmt;
+            }
+            catch (sql::SQLException& e) {
+                cerr << "MySQL Exception: " << e.what() << endl;
+                check = false;
+            }
+            if (check) {
+                try {
+                    sql::PreparedStatement* updateStmt = con->prepareStatement("UPDATE projects SET  TimePurchased = TimePurchased + 1  WHERE project_id = ?");
+                    updateStmt->setInt(1, Project_id);
+                    updateStmt->execute();
+                    delete updateStmt;
 
-            pstmt->executeUpdate();
+                    // Update project_profit and product_profit
+                    sql::PreparedStatement* profitStmt = con->prepareStatement("UPDATE budget_table SET  project_profit = project_profit + ? WHERE id = 1");
+                    profitStmt->setDouble(1, price);
+                    profitStmt->execute();
+                    delete profitStmt;
+                }
+                catch (sql::SQLException& e) {
+                    cerr << "MySQL Exception: " << e.what() << endl;
+                }
+            }
 
-            delete pstmt;
         }
+
         else {
             cout << "Amount paid is less than the project price. Please insert the full amount.\n";
         }
-
         delete res;
         delete pstmtSelect;
+
     }
     catch (sql::SQLException& e) {
-        cerr << "SQL Error: " << e.what() << endl;
+        cerr << "MySQL Exception: " << e.what() << endl;
     }
 }
 // class OrderProduct
