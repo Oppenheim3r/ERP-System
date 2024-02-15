@@ -6,7 +6,7 @@
 #include "sqlConn.h" 
 using namespace std;
 
-class User : private OrderProduct, private OrderProject, private Customer {
+class User final : private OrderProduct, private OrderProject, private Customer {
 	int Customer_ID;
 	int Product_ID;
 	int Project_ID;
