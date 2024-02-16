@@ -564,6 +564,20 @@ void AddingEmployeesToWork::displayEmployeesWithCredentials(sql::Connection* con
     }
 }
 void AddingEmployeesToWork::assignPassword(sql::Connection* con) {
+    
+    sql::Statement* stmt = con->createStatement();
+    sql::ResultSet* res = stmt->executeQuery("SELECT name , email FROM employees WHERE password IS NULL");
+
+    cout << "Employees without Password:\n";
+    cout << "Name | Email \n";
+
+    while (res->next()) {
+        cout << res->getString("name") <<" | " << res->getString("email") << endl;
+    }
+
+    delete res;
+    delete stmt;
+
     string email;
     cout << "Enter employee email: ";
     cin >> email;
