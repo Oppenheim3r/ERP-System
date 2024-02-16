@@ -438,10 +438,10 @@ void Admin :: opreation(sql::Connection* con) {
 					continue;
 				}
 				switch (r2) {
-				case 1:displayEmployeesWithCredentials(con);
-					break;
-				case 2: assignPassword(con);
-					break;
+				case 1: assignPassword(con);
+				break;
+                                case 2:displayEmployeesWithCredentials(con);
+				break;
 				case 3:exit2 = false;
 					break;
 				case 4:exit1 = false;
