@@ -1,4 +1,4 @@
-#ERP-System
+# ERP-System
 
 Welcome to the ERP System repository for tech companies specializing in software and hardware solutions.
 #Introduction
@@ -8,24 +8,24 @@ Technologies Used:
      C++: Used for the backend logic and implementation of core functionalities.
     MySQL: Employed as the database management system to store and manage data effectively
     
-#The ERP System is built using the following technologies:
+# The ERP System is built using the following technologies:
 
     C++: Used for the backend logic and implementation of core functionalities.
     MySQL: Employed as the database management system to store and manage data effectively.
 
-#The development and maintenance of this ERP System are led by two experienced developers:
+# The development and maintenance of this ERP System are led by two experienced developers:
 
-  #RaghadQiari:
+  # RaghadQiari:
 Raghad is a highly skilled software engineer 
 has a great  passion for building robust and efficient systems, Raghad brings valuable insights to the project.
 renowned for her exceptional problem-solving abilities and creative approach to software development.
 With a tireless work ethic, Raghad consistently delivers innovative solutions to complex challenges, making significant contributions to the project.
  
-   #Husam-Gameel:
+   # Husam-Gameel:
 is a versatile software developer known for his problem-solving prowess and proficiency in low-level computing.
 With a knack for crafting innovative solutions, Husam employs his programming skills to tackle complex challenges effectively.
 
-#Project Overview
+# Project Overview
 
 The ERP System serves as a comprehensive solution for managing enterprise resources, including:
 
@@ -37,7 +37,7 @@ The ERP System serves as a comprehensive solution for managing enterprise resour
     Project Management: Plan, execute, and monitor projects, including resource allocation and task tracking.
     Quality Control: Monitor product quality, analyze performance metrics, and identify areas for improvement.
 
-#Contribution Guidelines
+# Contribution Guidelines
 
 We welcome contributions from the open-source community to enhance the functionality and usability of the ERP System. Here are some guidelines for contributing:
 
