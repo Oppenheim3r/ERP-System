@@ -22,7 +22,7 @@ renowned for her exceptional problem-solving abilities and creative approach to 
 With a tireless work ethic, Raghad consistently delivers innovative solutions to complex challenges, making significant contributions to the project.
  
    # Husam-Gameel:
-is a versatile software developer known for his problem-solving prowess and proficiency in low-level computing.
+Husam is a versatile software developer known for his problem-solving prowess and proficiency in low-level computing.
 With a knack for crafting innovative solutions, Husam employs his programming skills to tackle complex challenges effectively.
 
 # Project Overview
