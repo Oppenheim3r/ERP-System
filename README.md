@@ -1,7 +1,7 @@
 # ERP-System
 
 Welcome to the ERP System repository for tech companies specializing in software and hardware solutions.
-#Introduction
+# Introduction
 
 This ERP System is designed and developed to efficiently manage enterprise resources for companies operating in the technology sector. Whether your company focuses on software development, hardware manufacturing, or both, this system provides comprehensive tools for managing various aspects of your business operations.
 Technologies Used:
