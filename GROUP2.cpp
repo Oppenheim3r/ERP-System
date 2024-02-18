@@ -7,21 +7,21 @@
 #include "sqlConn.h"
 using namespace std;
 
-   // class products
+// class products
 void Product::DisplayAllProduct(sql::Connection* con) {
     try {
         sql::Statement* stmt = con->createStatement();
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products");
 
-      cout << "Displaying all Products :\n";
-cout << "ID | Product Name | Price | Quantity | Time Purchased\n";
-while (res->next()) {
-    cout << res->getInt("product_id") << " | "
-        << res->getString("product_name") << " | "
-        << res->getDouble("price") << " | "
-        << res->getString("quantity") << "| "<<
-        res->getInt("TimePurchased") << endl;
-}
+        cout << "Displaying all Products :\n";
+        cout << "ID | Product Name | Price | Quantity | Time Purchased\n";
+        while (res->next()) {
+            cout << res->getInt("product_id") << " | "
+                << res->getString("product_name") << " | "
+                << res->getDouble("price") << " | "
+                << res->getString("quantity") << "| " <<
+                res->getInt("TimePurchased") << endl;
+        }
         delete res;
         delete stmt;
     }
@@ -173,7 +173,7 @@ void Product::DeleteProduct(sql::Connection* con) {
     cout << "Product deleted successfully!\n";
 
 }
-       // class projects 
+// class projects 
 void Project::DisplayAllProjects(sql::Connection* con) {
     sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM projects");
     sql::ResultSet* res = pstmt->executeQuery();
@@ -243,6 +243,7 @@ void Project::InsertProject(sql::Connection* con) {
 
 
     cout << "Project Name: ";
+    cin.ignore();
     getline(cin, projectName);
 
     cout << "Price: ";
@@ -344,7 +345,7 @@ void Project::DeleteProject(sql::Connection* con) {
     cout << "Project deleted successfully!\n";
 
 }
-     //class customer
+//class customer
 void Customer::displayAllCustomers(sql::Connection* con) {
     sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM customers");
     sql::ResultSet* res = pstmt->executeQuery();
@@ -411,9 +412,11 @@ int Customer::insertCustomer(sql::Connection* con) {
     cout << "Enter customer details:\n";
 
     cout << "Customer Name: ";
+    cin.ignore(); 
     getline(cin, customerName);
 
     cout << "Address: ";
+    cin.ignore();
     getline(cin, address);
 
 
@@ -499,12 +502,12 @@ void Customer::deleteCustomer(sql::Connection* con) {
 
     cout << "Customer deleted successfully!\n";
 }
-int Customer::insertCustomer(bool &check,sql::Connection* con) {
+int Customer::insertCustomer(bool& check, sql::Connection* con) {
     string customerName;
     string address;
     string phoneNumber;
 
-    
+
 
     cout << "Name: ";
     cin >> customerName;
@@ -534,37 +537,38 @@ int Customer::insertCustomer(bool &check,sql::Connection* con) {
             cout << "Phone number already exists. Please enter a different phone number.\n";
         }
     }
-    try {sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO customers (customer_name, address, phone_number) VALUES (?, ?, ?)");
-    pstmt->setString(1, customerName);
-    pstmt->setString(2, address);
-    pstmt->setString(3, phoneNumber);
+    try {
+        sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO customers (customer_name, address, phone_number) VALUES (?, ?, ?)");
+        pstmt->setString(1, customerName);
+        pstmt->setString(2, address);
+        pstmt->setString(3, phoneNumber);
 
-    pstmt->executeUpdate();
+        pstmt->executeUpdate();
 
-    delete pstmt;
+        delete pstmt;
 
-    cout << "Done !\n";
-    check = true;
+        cout << "Done !\n";
+        check = true;
 
-    sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT LAST_INSERT_ID()");
-    sql::ResultSet* res = pstmtSelect->executeQuery();
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT LAST_INSERT_ID()");
+        sql::ResultSet* res = pstmtSelect->executeQuery();
 
-    if (res->next()) {
-        customer_id = res->getInt(1);
-        //cout << "Your assigned customer ID is: " << customer_id << endl;
+        if (res->next()) {
+            customer_id = res->getInt(1);
+            //cout << "Your assigned customer ID is: " << customer_id << endl;
 
-    }
+        }
 
-    delete res;
-    delete pstmtSelect;
+        delete res;
+        delete pstmtSelect;
 
-    return customer_id;
+        return customer_id;
     }
     catch (sql::SQLException& e) {
         cerr << "MySQL Exception: " << e.what() << endl;
         check = false;
     }
-    
+
 }
 bool Customer::Login(int& customer_id, sql::Connection* con) {
     string name;
@@ -582,9 +586,9 @@ bool Customer::Login(int& customer_id, sql::Connection* con) {
 
         bool exists = res->next();
         if (exists == true) {
-            cout << "Welcom " << name<<endl;
-            customer_id= res->getInt("customer_id");
-          
+            cout << "Welcom " << name << endl;
+            customer_id = res->getInt("customer_id");
+
         }
         delete res;
         delete pstmt;
@@ -595,7 +599,7 @@ bool Customer::Login(int& customer_id, sql::Connection* con) {
     }
 }
 
-        // class Vendor
+// class Vendor
 void Vendor::displayAllVendors(sql::Connection* con) {
     sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM vendors");
     sql::ResultSet* res = pstmt->executeQuery();
@@ -662,9 +666,11 @@ int Vendor::insertVendor(sql::Connection* con) {
     cout << "Enter vendor details:\n";
 
     cout << "vendor Name: ";
+    cin.ignore();
     getline(cin, vendorName);
 
     cout << "Address: ";
+    cin.ignore();
     getline(cin, address);
 
     while (true) {
@@ -756,7 +762,7 @@ void OrderProject::displayAllOrders(sql::Connection* con) {
         sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM orderProject");
         sql::ResultSet* res = pstmt->executeQuery();
 
-       cout << "Displaying all orders:\n";
+        cout << "Displaying all orders:\n";
         cout << "ID | Project ID | Customer ID | Amount Paid | Order Date | Date to be Ready\n";
 
         while (res->next()) {
@@ -842,7 +848,7 @@ void OrderProject::displayOrderById(int orderId, sql::Connection* con) {
                 << res->getInt("customer_id") << " | "
                 << res->getDouble("amount_paid") << " | "
                 << res->getString("order_date") << " | "
-                << res->getString("date_to_be_ready") <<endl;
+                << res->getString("date_to_be_ready") << endl;
         }
 
         delete res;
@@ -867,7 +873,7 @@ void OrderProject::editOrder(sql::Connection* con) {
 
     displayOrderById(orderId, con);
 
-   cout << "Enter New Amount Paid: ";
+    cout << "Enter New Amount Paid: ";
     cin >> newAmountPaid;
 
     try {
@@ -901,7 +907,7 @@ void OrderProject::removeOrder(sql::Connection* con) {
 
     char confirmation;
     do {
-      cout << "Are you sure you want to delete this order? (Y/N): ";
+        cout << "Are you sure you want to delete this order? (Y/N): ";
         cin >> confirmation;
         confirmation = toupper(confirmation);
 
@@ -917,14 +923,14 @@ void OrderProject::removeOrder(sql::Connection* con) {
                 cout << "Order deleted successfully!\n";
             }
             catch (sql::SQLException& e) {
-               cerr << "SQL Error: " << e.what() << std::endl;
+                cerr << "SQL Error: " << e.what() << std::endl;
             }
         }
         else if (confirmation == 'N') {
             cout << "Deletion canceled.\n";
         }
         else {
-           cout << "Invalid input. Please enter 'Y' for Yes or 'N' for No.\n";
+            cout << "Invalid input. Please enter 'Y' for Yes or 'N' for No.\n";
         }
     } while (confirmation != 'Y' && confirmation != 'N');
 }
@@ -1255,7 +1261,7 @@ void OrderProduct::EditProductOrder(sql::Connection* con) {
     cin >> proId;
     cout << "\nEnter the quantity : ";
     cin >> quantity;
-    double Total =CalculationTheAmount(proId, quantity, con);
+    double Total = CalculationTheAmount(proId, quantity, con);
     cin >> amount2;
     amount2 = amount1 + amount2;
     AddOrderProduct(proId, customerId, quantity, amount2, Total, con);
@@ -1355,6 +1361,12 @@ void WorkOn::updateProjectEmployees(sql::Connection* con) {
     cout << "2. Change Project " << endl;
     cout << "Choose: ";
     cin >> c;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid input. Please enter a number.\n";
+        return;
+    }
     switch (c) {
     case 1: {
         cout << "Enter Project ID : ";
@@ -1407,132 +1419,131 @@ void WorkOn::updateProjectEmployees(sql::Connection* con) {
 
 // class products to order
 void ProductsToOrder::productsToOrder(sql::Connection* con) {
-	int number;
-	cout << "Enter The maximum quantity: ";
-	cin >> number;
+    int number;
+    cout << "Enter The maximum quantity: ";
+    cin >> number;
 
-	try {
-		sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM products WHERE quantity <= ?");
-		pstmtSelect->setInt(1, number);
-		sql::ResultSet* res = pstmtSelect->executeQuery();
+    try {
+        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM products WHERE quantity <= ?");
+        pstmtSelect->setInt(1, number);
+        sql::ResultSet* res = pstmtSelect->executeQuery();
 
-		cout << "Product Details :" << endl;
-		cout << "Product ID | Product name | Price | Quantity \n";
-		while (res->next()) {
-			cout << res->getInt("product_id") << " | "
-				<< res->getString("product_name") << " | "
-				<< res->getDouble("price") << " | "
-				<< res->getInt("quantity")
-				<< endl;
-		}
-		delete res;
-		delete pstmtSelect;
-	}
-	catch (sql::SQLException& e) {
-		cerr << "SQL Error: " << e.what() << endl;
-	}
+        cout << "Product Details :" << endl;
+        cout << "Product ID | Product name | Price | Quantity \n";
+        while (res->next()) {
+            cout << res->getInt("product_id") << " | "
+                << res->getString("product_name") << " | "
+                << res->getDouble("price") << " | "
+                << res->getInt("quantity")
+                << endl;
+        }
+        delete res;
+        delete pstmtSelect;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+    }
 
-	string product_name, vendor_name;
-	double price;
-	int quantity;
-	cout << "\nOrder a product." << endl;
-	cout << "Enter the details of the product: " << endl;
-	cout << "Enter product name: ";
-	cin >> product_name;
-	cout << "Enter vendor name: ";
-	cin >> vendor_name;
-	cout << "Enter the price: ";
-	cin >> price;
-	cout << "Enter the quantity: ";
-	cin >> quantity;
+    string product_name, vendor_name;
+    double price;
+    int quantity;
+    cout << "\nOrder a product." << endl;
+    cout << "Enter the details of the product: " << endl;
+    cout << "Enter product name: ";
+    cin >> product_name;
+    cout << "Enter vendor name: ";
+    cin >> vendor_name;
+    cout << "Enter the price: ";
+    cin >> price;
+    cout << "Enter the quantity: ";
+    cin >> quantity;
 
-	try {
-		sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO productsToBuy(product_name, vendor_name, price, quantity) VALUES (?, ?, ?, ?)");
-		pstmt->setString(1, product_name);
-		pstmt->setString(2, vendor_name);
-		pstmt->setDouble(3, price);
-		pstmt->setInt(4, quantity);
-		pstmt->execute();
-		delete pstmt;
-		cout << "The order has been sent successfully." << endl;
-	}
-	catch (sql::SQLException& e) {
-		cerr << "MySQL Exception: " << e.what() << endl;
-	}
+    try {
+        sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO productsToBuy(product_name, vendor_name, price, quantity) VALUES (?, ?, ?, ?)");
+        pstmt->setString(1, product_name);
+        pstmt->setString(2, vendor_name);
+        pstmt->setDouble(3, price);
+        pstmt->setInt(4, quantity);
+        pstmt->execute();
+        delete pstmt;
+        cout << "The order has been sent successfully." << endl;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "MySQL Exception: " << e.what() << endl;
+    }
 }
 
 void ProductsToOrder::displayApprovedProducts(sql::Connection* con) {
-	try {
-		sql::Statement* stmt = con->createStatement();
-		sql::ResultSet* res = stmt->executeQuery("SELECT * FROM productsToBuy WHERE approve = true");
+    try {
+        sql::Statement* stmt = con->createStatement();
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM productsToBuy WHERE approve = true");
 
-		if (!res->next()) {
-			cout << "No products with approved status found in productsToBuy.\n";
-		}
-		else {
-			cout << "Approved Products Details :" << endl;
-			cout << "Product Name | Vendor Name | Price | Quantity \n";
-			do {
-				cout << res->getString("product_name") << " | "
-					<< res->getString("vendor_name") << " | "
-					<< res->getDouble("price") << " | "
-					<< res->getInt("quantity")
-					<< endl;
-			} while (res->next());
+        if (!res->next()) {
+            cout << "No products with approved status found in productsToBuy.\n";
+        }
+        else {
+            cout << "Approved Products Details :" << endl;
+            cout << "Product Name | Vendor Name | Price | Quantity \n";
+            do {
+                cout << res->getString("product_name") << " | "
+                    << res->getString("vendor_name") << " | "
+                    << res->getDouble("price") << " | "
+                    << res->getInt("quantity")
+                    << endl;
+            } while (res->next());
 
-			char choice;
-			cout << "\nDo you want to insert these products into the products table? (Y/N): ";
-			cin >> choice;
-			if (toupper(choice) == 'Y') {
-				insertApprovedProducts(con);
-			}
-		}
+            char choice;
+            cout << "\nDo you want to insert these products into the products table? (Y/N): ";
+            cin >> choice;
+            if (toupper(choice) == 'Y') {
+                insertApprovedProducts(con);
+            }
+        }
 
-		delete res;
-		delete stmt;
-	}
-	catch (sql::SQLException& e) {
-		cerr << "SQL Error: " << e.what() << endl;
-	}
+        delete res;
+        delete stmt;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+    }
 }
 
 void ProductsToOrder::insertApprovedProducts(sql::Connection* con) {
-		try {
-			sql::Statement* stmt = con->createStatement();
-			sql::ResultSet* res = stmt->executeQuery("SELECT * FROM productsToBuy WHERE approve = true");
+    try {
+        sql::Statement* stmt = con->createStatement();
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM productsToBuy WHERE approve = true");
 
-			while (res->next()) {
-				string product_name = res->getString("product_name");
-				string vendor_name = res->getString("vendor_name");
-				double price = res->getDouble("price");
-				int quantity = res->getInt("quantity");
+        while (res->next()) {
+            string product_name = res->getString("product_name");
+            string vendor_name = res->getString("vendor_name");
+            double price = res->getDouble("price");
+            int quantity = res->getInt("quantity");
 
-				try {
-					sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO products(product_name, vendor_name, price, quantity) VALUES (?, ?, ?, ?)");
-					pstmt->setString(1, product_name);
-					pstmt->setString(2, vendor_name);
-					pstmt->setDouble(3, price);
-					pstmt->setInt(4, quantity);
-					pstmt->execute();
-					delete pstmt;
-				}
-				catch (sql::SQLException& e) {
-					cerr << "MySQL Exception: " << e.what() << endl;
-				}
-			}
+            try {
+                sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO products(product_name, vendor_name, price, quantity) VALUES (?, ?, ?, ?)");
+                pstmt->setString(1, product_name);
+                pstmt->setString(2, vendor_name);
+                pstmt->setDouble(3, price);
+                pstmt->setInt(4, quantity);
+                pstmt->execute();
+                delete pstmt;
+            }
+            catch (sql::SQLException& e) {
+                cerr << "MySQL Exception: " << e.what() << endl;
+            }
+        }
 
 
-			sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM productsToBuy WHERE approve = true");
-			deleteStmt->execute();
-			delete deleteStmt;
+        sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM productsToBuy WHERE approve = true");
+        deleteStmt->execute();
+        delete deleteStmt;
 
-			delete res;
-			delete stmt;
+        delete res;
+        delete stmt;
 
-			cout << "Products inserted into the products table successfully, and removed from productsToBuy." << endl;
-		}
-		catch (sql::SQLException& e) {
-			cerr << "SQL Error: " << e.what() << endl;
-		}
-	}
-
+        cout << "Products inserted into the products table successfully, and removed from productsToBuy." << endl;
+    }
+    catch (sql::SQLException& e) {
+        cerr << "SQL Error: " << e.what() << endl;
+    }
+}
