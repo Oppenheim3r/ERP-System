@@ -1,12 +1,3 @@
-DELIMITER //
-
-CREATE TRIGGER log_changes_del BEFORE DELETE ON customers
-FOR EACH ROW
-BEGIN
-    INSERT INTO change_log (table_name, action) VALUES ('productsToBuy', 'INSERT');
-END;
-//
-DELIMITER ;
 
 -- Employees Table
 DELIMITER //
