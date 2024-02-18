@@ -23,9 +23,9 @@ info::info() {
     }
 }
 int info::EmployeeCount = 0;
-bool info::EmployeeExists(sql::Connection* con,int Emp_id) {
+bool info::EmployeeExists(sql::Connection* con, int Emp_id) {
     sql::PreparedStatement* pstmt = con->prepareStatement("SELECT * FROM employees WHERE id = ?");
-    pstmt->setInt(1,Emp_id);
+    pstmt->setInt(1, Emp_id);
 
     sql::ResultSet* res = pstmt->executeQuery();
 
@@ -36,7 +36,7 @@ bool info::EmployeeExists(sql::Connection* con,int Emp_id) {
 
     return exists;
 }
-        // class Employees
+// class Employees
 Employee::Employee() {
 }
 
@@ -125,11 +125,11 @@ void Jobposition::RemoveEmployee(sql::Connection* con) {
         cout << "There are No Employees to remove." << endl;
     }
     else {
-        
+
         string name;
         cout << "Enter the Name of the Employee: ";
         cin >> name;
-        
+
 
         try {
             sql::PreparedStatement* selectStmt = con->prepareStatement("SELECT id, name FROM Employees WHERE name = ?");
@@ -148,50 +148,53 @@ void Jobposition::RemoveEmployee(sql::Connection* con) {
             int idToDelete;
             cout << "Enter the ID of the employee you want to delete :  ";
             cin >> idToDelete;
-                    if (!EmployeeExists(con, idToDelete)) {
-            cout << "Employee With ID " << idToDelete << " does not exists ." << endl;
-        }else{cout << "\nAre you sure you want to delete this employee ?";
-        cout << "\n1. Yes";
-        cout << "\n2. No\n";
-        cin >> x;
-        switch (x) {
-        case 1:
-            sure = true;
-            break;
-        case 2:
-            sure = false;
-            break;
-        default:
-            cout << "Try again , must be 1 or 2 ";
-        }
-        if (sure == true) {
-            try {
-                sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM Employees WHERE id = ?");
-                deleteStmt->setInt(1, idToDelete);
-                deleteStmt->execute();
-                delete deleteStmt;
-
-
-                EmployeeCount--;
-
-                cout << "Employee with ID " << idToDelete << " removed successfully." << endl;
+            if (!EmployeeExists(con, idToDelete)) {
+                cout << "Employee With ID " << idToDelete << " does not exists ." << endl;
             }
-            catch (sql::SQLException& e) {
-                cerr << "MySQL Exception: " << e.what() << endl;
+            else {
+                cout << "\nAre you sure you want to delete this employee ?";
+                cout << "\n1. Yes";
+                cout << "\n2. No\n";
+                cin >> x;
+                switch (x) {
+                case 1:
+                    sure = true;
+                    break;
+                case 2:
+                    sure = false;
+                    break;
+                default:
+                    cout << "Try again , must be 1 or 2 ";
+                }
+                if (sure == true) {
+                    try {
+                        sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM Employees WHERE id = ?");
+                        deleteStmt->setInt(1, idToDelete);
+                        deleteStmt->execute();
+                        delete deleteStmt;
+
+
+                        EmployeeCount--;
+
+                        cout << "Employee with ID " << idToDelete << " removed successfully." << endl;
+                    }
+                    catch (sql::SQLException& e) {
+                        cerr << "MySQL Exception: " << e.what() << endl;
+                    }
+                }
+                else
+                    cout << "\nThe process has been stopped . ";
+
+
             }
         }
-        else
-            cout << "\nThe process has been stopped . ";
-       
-        
-    }}
-        
-    catch (sql::SQLException& e) {
-        cerr << "MySQL Exception: " << e.what() << endl;
+
+        catch (sql::SQLException& e) {
+            cerr << "MySQL Exception: " << e.what() << endl;
+        }
     }
-}   
 }
-       // class HR
+// class HR
 HumanResources::HumanResources() {
     max_emp = 100;
 }
@@ -205,7 +208,10 @@ void HumanResources::AddEmployee(sql::Connection* con) {
         cout << "The number of Employees has reached its maximum , You cannot add a new employee" << endl;
     else {
         cout << "Enter Employee Name: " << endl;
+        cin.ignore();
         getline(cin, name);
+   
+        
         cout << "Enter Employee Email: " << endl;
         cin >> email;
         cout << "Enter Employee Position: " << endl;
@@ -236,11 +242,11 @@ void HumanResources::DisplayAllEmp(sql::Connection* con) {
     try {
         sql::Statement* stmt = con->createStatement();
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees");
- cout << "ID" << "   |   " << "Name " << "   |   " << "Email" << "   |   " << "Position" << "   |   " << "Salary" << endl;
- while (res->next()) {
-     cout <<  res->getInt("id") << "   |   " << res->getString("name") << "   |   " << res->getString("email")
-         << "   |   " << res->getString("position") << "   |   " << res->getDouble("salary") << endl;
- }
+        cout << "ID" << "   |   " << "Name " << "   |   " << "Email" << "   |   " << "Position" << "   |   " << "Salary" << endl;
+        while (res->next()) {
+            cout << res->getInt("id") << "   |   " << res->getString("name") << "   |   " << res->getString("email")
+                << "   |   " << res->getString("position") << "   |   " << res->getDouble("salary") << endl;
+        }
         delete res;
         delete stmt;
 
@@ -250,7 +256,7 @@ void HumanResources::DisplayAllEmp(sql::Connection* con) {
     }
 
 }
-       // class SM
+// class SM
 void SalaryManagement::SalaryDeduction(sql::Connection* con) {
     double salaryy;
     cout << "Choose:\n";
@@ -476,7 +482,7 @@ double SalaryManagement::TotalSalaries(sql::Connection* con) {
     catch (sql::SQLException& e) {
         cerr << "MySQL Exception: " << e.what() << endl;
     }
-cout << "Total Salaries are : " << Total << endl;
+    cout << "Total Salaries are : " << Total << endl;
     return Total;
 }
 
@@ -564,7 +570,7 @@ void AddingEmployeesToWork::displayEmployeesWithCredentials(sql::Connection* con
     }
 }
 void AddingEmployeesToWork::assignPassword(sql::Connection* con) {
-    
+
     sql::Statement* stmt = con->createStatement();
     sql::ResultSet* res = stmt->executeQuery("SELECT name , email FROM employees WHERE password IS NULL");
 
@@ -572,7 +578,7 @@ void AddingEmployeesToWork::assignPassword(sql::Connection* con) {
     cout << "Name | Email \n";
 
     while (res->next()) {
-        cout << res->getString("name") <<" | " << res->getString("email") << endl;
+        cout << res->getString("name") << " | " << res->getString("email") << endl;
     }
 
     delete res;
@@ -632,5 +638,4 @@ void AddingEmployeesToWork::assignPassword(sql::Connection* con) {
         cout << "Employee with email " << email << " does not exist.\n";
     }
 }
-
 
