@@ -401,7 +401,8 @@ void Admin :: opreation(sql::Connection* con) {
 				switch (r2) {
 				case 1:HumanResources::DisplayAllEmp(con);
 					break;
-				case 2: HumanResources::AddEmployee(con);
+				case 2: EmployeeBudgetStatues(con);
+					HumanResources::AddEmployee(con);
 					break;
 				case 3:RemoveEmployee(con);
 					break;
@@ -743,7 +744,8 @@ void Admin :: opreation(sql::Connection* con) {
 					break;
 				case 4:displayProductsToBuy(con);
 					break;
-				case 5:insertProductToBuy(con);
+				case 5:ProductBudgetStatues(con);
+					insertProductToBuy(con);
 					break;
 				case 6:approveProduct(con);
 					break;
