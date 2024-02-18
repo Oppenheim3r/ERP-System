@@ -41,6 +41,12 @@ void FinancialManagement::ChangeBudgets(sql::Connection* con) {
     cout << "2. Product Budget\n";
     cout << "3. Project Budget \n";
     cin >> choose;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid input. Please enter a number.\n";
+        return;
+    }
     switch (choose) {
     case 1: {
         cout << "Enter the New Employee Budget :\n";
@@ -101,7 +107,7 @@ void FinancialManagement::ChangeBudgets(sql::Connection* con) {
 }
 
 void FinancialManagement::EmployeeBudgetStatues(sql::Connection* con) {
-    double EmployeeBudget; 
+    double EmployeeBudget;
     cout << "\nNote : " << endl;
     double Total = TotalSalaries(con);
 
@@ -144,7 +150,7 @@ void FinancialManagement::EmployeeBudgetStatues(sql::Connection* con) {
 void FinancialManagement::ProductBudgetStatues(sql::Connection* con) {
     double ProductBudget;
     double ProductCost;
-     cout << "\nNote : " << endl;
+    cout << "\nNote : " << endl;
 
     try {
         sql::Statement* stmt = con->createStatement();
