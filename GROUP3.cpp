@@ -101,7 +101,8 @@ void FinancialManagement::ChangeBudgets(sql::Connection* con) {
 }
 
 void FinancialManagement::EmployeeBudgetStatues(sql::Connection* con) {
-    double EmployeeBudget;
+    double EmployeeBudget; 
+    cout << "\nNote : " << endl;
     double Total = TotalSalaries(con);
 
     try {
@@ -132,16 +133,18 @@ void FinancialManagement::EmployeeBudgetStatues(sql::Connection* con) {
         cout << "The Total employee salaries are greater than the salary budget, Action must be taken urgently!\n";
     }
     else if (Total + 50000 >= EmployeeBudget) {
-        cout << "Total salaries are almost up to the salary budget, it is better to take action.";
+        cout << "Total salaries are almost up to the salary budget, it is better to take action.\n";
     }
     else {
-        cout << "Total employee salaries are adequate, there is still a budget to add employees";
+        cout << "Total employee salaries are adequate, there is still a budget to add employees.\n";
     }
+    cout << "________________________________________\n\n";
 }
 
 void FinancialManagement::ProductBudgetStatues(sql::Connection* con) {
     double ProductBudget;
     double ProductCost;
+     cout << "\nNote : " << endl;
 
     try {
         sql::Statement* stmt = con->createStatement();
@@ -175,6 +178,7 @@ void FinancialManagement::ProductBudgetStatues(sql::Connection* con) {
     else {
         cout << "Total Products costs are adequate, there is still a budget to buy products.\n";
     }
+    cout << "________________________________________\n\n";
 }
 
 void FinancialManagement::displayProductsToBuy(sql::Connection* con) {
