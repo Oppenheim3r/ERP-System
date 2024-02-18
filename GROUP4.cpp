@@ -59,6 +59,12 @@ void User:: Services(sql::Connection* con) {
 						cout << "2. Sign Up \n";
 						cout << "choose [ ]\b\b";
 						cin >> log;
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+							cout << "Invalid input. Please enter a number.\n";
+							continue;
+						}
 						switch (log) {
 						case 1:
 						{
@@ -164,6 +170,12 @@ void User:: Services(sql::Connection* con) {
 						cout << "2. Sign Up \n";
 						cout << "choose [ ]\b\b";
 						cin >> log;
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+							cout << "Invalid input. Please enter a number.\n";
+							continue;
+						}
 						switch (log) {
 						case 1:
 						{
