@@ -9,7 +9,7 @@ using namespace std;
 #include "GROUP2.h"
 #include <mysql_connection.h>
 
-class FinancialManagement : public SalaryManagement {
+class FinancialManagement : public SalaryManagement,public Product {
 protected:
     void Display_Budget_table(sql::Connection* con);
     void ChangeBudgets(sql::Connection* con);
