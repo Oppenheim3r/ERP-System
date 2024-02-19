@@ -37,17 +37,19 @@ CREATE TABLE orderProduct (
     quantity_ordered INT NOT NULL,
     amount_paid DECIMAL(10, 2) NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+    FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customers (customer_id) ON DELETE CASCADE
 );
 
-CREATE TABLE workon (
-    project_id INT,
-    employee_id INT,
+
+CREATE TABLE workOn (
+    project_id INT NOT NULL,
+    employee_id INT NOT NULL,
     PRIMARY KEY (project_id, employee_id),
-    FOREIGN KEY (project_id) REFERENCES projects(project_id),
-    FOREIGN KEY (employee_id) REFERENCES employees(id)
+    FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE,
+    FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE orderProject (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,10 +58,10 @@ CREATE TABLE orderProject (
     amount_paid DECIMAL(10, 2) NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_to_be_ready TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects (project_id),
-    FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
-    CONSTRAINT fk_orderproject_project FOREIGN KEY (project_id) REFERENCES projects (project_id)
+    FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customers (customer_id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE vendors (
     vendor_id INT AUTO_INCREMENT PRIMARY KEY,
