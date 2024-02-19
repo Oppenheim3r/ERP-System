@@ -275,86 +275,64 @@ void FinancialManagement::approveProduct(sql::Connection* con) {
         cout << "Enter the ID of the product to approve: ";
         cin >> productId;
 
-        try {
-            sql::PreparedStatement* pstmt = con->prepareStatement("UPDATE productsToBuy SET approve = true WHERE id = ?");
-            pstmt->setInt(1, productId);
-            pstmt->execute();
-            delete pstmt;
+        double percentage;
+        cout << "Enter the percentage to add to the product price: ";
+        cin >> percentage;
 
-            cout << "Product with ID " << productId << " approved successfully!\n";
+        char confirm;
+        cout << "Are you sure about these changes? (Y/N): ";
+        cin >> confirm;
+
+        if (toupper(confirm) == 'Y') {
+            try {
+                sql::PreparedStatement* pstmt = con->prepareStatement("UPDATE productsToBuy SET approve = true, price = price + (price * ? / 100) WHERE id = ?");
+                pstmt->setDouble(1, percentage);
+                pstmt->setInt(2, productId);
+                pstmt->execute();
+                delete pstmt;
+
+                cout << "Product with ID " << productId << " approved successfully!\n";
+            }
+            catch (sql::SQLException& e) {
+                cerr << "SQL Error: " << e.what() << endl;
+            }
         }
-        catch (sql::SQLException& e) {
-            cerr << "SQL Error: " << e.what() << endl;
+        else {
+            cout << "Changes not confirmed. Product approval cancelled.\n";
         }
     }
     catch (sql::SQLException& e) {
         cerr << "SQL Error: " << e.what() << endl;
     }
 }
-
 void FinancialManagement::editProductPrice(sql::Connection* con) {
     int productId;
-    double profitPercentage;
-    char choice;
+    double NewPrice;
 
-
+    DisplayAllProduct(con);
     cout << "Enter the ID of the product you want to edit: ";
     cin >> productId;
-
-
-    cout << "Enter the profit percentage to add to the price: ";
-    cin >> profitPercentage;
-
+    if (!ProductExists(con, productId)) {
+        cout << "product with ID " << productId << " does not exist!\n";
+        return;
+    }
+    cout << "\nCurrent Product Details:\n";
+    displayProductById(productId, con);
+    cout << "\nEnter the New Price : ";
+    cin >> NewPrice;
     try {
-
-        sql::PreparedStatement* pstmtSelect = con->prepareStatement("SELECT * FROM productsToBuy WHERE id = ?");
-        pstmtSelect->setInt(1, productId);
-
-        sql::ResultSet* res = pstmtSelect->executeQuery();
-
-        if (res->next()) {
-            cout << "\nCurrent Product Details:\n";
-            cout << "ID | Product Name | Vendor Name | Price | Quantity | Approved\n";
-            cout << res->getInt("id") << " | "
-                << res->getString("product_name") << " | "
-                << res->getString("vendor_name") << " | "
-                << res->getDouble("price") << " | "
-                << res->getInt("quantity") << " | "
-                << res->getBoolean("approve") << "\n";
-
-
-            cout << "Are you sure you want to edit the price? (Y/N): ";
-            cin >> choice;
-
-            if (toupper(choice) == 'Y') {
-
-                double currentPrice = res->getDouble("price");
-                double newPrice = currentPrice + (currentPrice * profitPercentage / 100);
-
-
-                sql::PreparedStatement* pstmtUpdate = con->prepareStatement("UPDATE productsToBuy SET price = ?, approve = true WHERE id = ?");
-                pstmtUpdate->setDouble(1, newPrice);
-                pstmtUpdate->setInt(2, productId);
-                pstmtUpdate->execute();
-
-                delete pstmtUpdate;
-
-                cout << "Product price updated successfully!\n";
-            }
-            else {
-                cout << "Edit canceled.\n";
-            }
-        }
-        else {
-            cout << "Product with ID " << productId << " not found.\n";
-        }
-
-        delete res;
-        delete pstmtSelect;
+        sql::PreparedStatement* updateStmt = con->prepareStatement("UPDATE products SET price = ? WHERE product_id = ?");
+        updateStmt->setDouble(1, NewPrice);
+        updateStmt->setInt(2, productId);
+        updateStmt->execute();
+        cout << "product price updated successfully!\n";
+        delete updateStmt;
     }
     catch (sql::SQLException& e) {
-        cerr << "SQL Error: " << e.what() << endl;
+        cerr << "MySQL Exception: " << e.what() << endl;
     }
+
+   
 }
 /////////////////
 //logs
