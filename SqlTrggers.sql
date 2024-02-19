@@ -1,3 +1,22 @@
+--Trigger for calculating how many days the project to be implmented in the customers systme
+DELIMITER //
+CREATE TRIGGER calculate_date_to_be_ready
+BEFORE INSERT ON orderProject
+FOR EACH ROW
+BEGIN
+    DECLARE time_needed_days INT;
+
+    SELECT time_needed INTO time_needed_days
+    FROM projects
+    WHERE project_id = NEW.project_id;
+
+    SET NEW.date_to_be_ready = DATE_ADD(CURRENT_TIMESTAMP, INTERVAL time_needed_days DAY);
+END;
+//
+DELIMITER ;
+--------------------------------------------------------------------------
+
+--All these triggers beneath this comment ,are for stroing logs for the operations that happen in the database 
 
 -- Employees Table
 DELIMITER //
