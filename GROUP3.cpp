@@ -239,9 +239,9 @@ void FinancialManagement::insertProductToBuy(sql::Connection* con) {
         delete pstmt;
 
 
-        sql::PreparedStatement* budgetStmt = con->prepareStatement("UPDATE budget_table SET product_budget = product_budget - ?, product_costs = product_costs + ? WHERE id = 1");
+        sql::PreparedStatement* budgetStmt = con->prepareStatement("UPDATE budget_table SET product_costs = product_costs + (?*?) WHERE id = 1");
         budgetStmt->setDouble(1, price);
-        budgetStmt->setDouble(2, price);
+        budgetStmt->setInt(2, quantity);
         budgetStmt->execute();
         delete budgetStmt;
 
