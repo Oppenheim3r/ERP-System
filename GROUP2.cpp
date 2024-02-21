@@ -1341,8 +1341,8 @@ void WorkOn::deleteEmployeeFromProject(sql::Connection* con) {
         else {
             try {
                 sql::PreparedStatement* deleteStmt = con->prepareStatement("DELETE FROM workon WHERE project_id = ? and employee_id=?");
-                deleteStmt->setInt(1, emp_id);
-                deleteStmt->setInt(2, project_id);
+                deleteStmt->setInt(1, project_id);
+                deleteStmt->setInt(2,emp_id);
                 deleteStmt->execute();
                 delete deleteStmt;
                 cout << "The operation was completed successfully! " << endl;
