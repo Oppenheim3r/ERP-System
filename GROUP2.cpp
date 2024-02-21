@@ -1520,11 +1520,10 @@ void ProductsToOrder::insertApprovedProducts(sql::Connection* con) {
             int quantity = res->getInt("quantity");
 
             try {
-                sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO products(product_name, vendor_name, price, quantity) VALUES (?, ?, ?, ?)");
+                sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO products(product_name, price, quantity) VALUES (?, ?, ?)");
                 pstmt->setString(1, product_name);
-                pstmt->setString(2, vendor_name);
-                pstmt->setDouble(3, price);
-                pstmt->setInt(4, quantity);
+                pstmt->setDouble(2, price);
+                pstmt->setInt(3, quantity);
                 pstmt->execute();
                 delete pstmt;
             }
