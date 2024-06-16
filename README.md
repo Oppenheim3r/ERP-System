@@ -21,8 +21,8 @@ has a great  passion for building robust and efficient systems, Raghad brings va
 renowned for her exceptional problem-solving abilities and creative approach to software development.
 With a tireless work ethic, Raghad consistently delivers innovative solutions to complex challenges, making significant contributions to the project.
  
-   # Husam-Gameel:
-Husam is a versatile software developer known for his problem-solving prowess and proficiency in low-level computing.
+ # Oppenheim3r:
+Oppe is a versatile software developer known for his problem-solving prowess and proficiency in low-level computing.
 With a knack for crafting innovative solutions, Husam employs his programming skills to tackle complex challenges effectively.
 
 # Project Overview
