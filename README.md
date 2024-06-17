@@ -23,7 +23,7 @@ With a tireless work ethic, Raghad consistently delivers innovative solutions to
  
  # Oppenheim3r:
 Oppe is a versatile software developer known for his problem-solving prowess and proficiency in low-level computing.
-With a knack for crafting innovative solutions, Husam employs his programming skills to tackle complex challenges effectively.
+With a knack for crafting innovative solutions, employs his programming skills to tackle complex challenges effectively.
 
 # Project Overview
 
